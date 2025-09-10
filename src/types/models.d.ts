@@ -19,6 +19,7 @@ declare namespace Model {
     originalEventId?: string;
     recurrenceRule?: string;
     blockLink?: string;
+    notes?: string; // 事件备注
   }
 
   interface EventFilter {

@@ -53,7 +53,7 @@ const BigCalendar: React.FC<Props> = () => {
   // Handle event creation
   const handleEventSelect = useCallback(async (event: EventCreateResult, slotInfo: SlotInfo) => {
     try {
-      const newEvent = await eventService.createEvent(event.content, event.startDate, event.endDate);
+      const newEvent = await eventService.createEvent(event.content, event.startDate, event.endDate, event.notes);
       eventService.pushEvent(newEvent);
     } catch (err) {
       console.error(err);

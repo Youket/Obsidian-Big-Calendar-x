@@ -37,6 +37,7 @@ export async function waitForInsert(
   EventContent: string,
   startDate: stringOrDate,
   endDate: stringOrDate,
+  notes?: string,
 ): Promise<Model.Event> {
   return await safeExecute(async () => {
     const {vault} = fileService.getState().app;
@@ -55,6 +56,7 @@ export async function waitForInsert(
       startMoment,
       endMoment,
       isMultiDayEvent ? 'TASK-TODO' : 'default',
+      notes,
     );
 
     // Get or create the daily note and insert the event

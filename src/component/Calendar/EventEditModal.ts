@@ -7,6 +7,7 @@ interface EventEditResult {
   startDate: Date;
   endDate: Date;
   allDay: boolean;
+  notes?: string;
 }
 
 /**
@@ -30,6 +31,7 @@ export default class EventEditModal extends Modal {
       startDate: new Date(event.start),
       endDate: new Date(event.end),
       allDay: event.allDay,
+      notes: event.notes || '',
     };
   }
 
@@ -75,6 +77,18 @@ export default class EventEditModal extends Modal {
         dropdown.setValue(this.result.eventType).onChange((value) => {
           this.result.eventType = value;
         });
+      });
+
+    // Event notes
+    new Setting(formContainer)
+      .setName('Notes')
+      .setDesc('Additional notes for the event (optional)')
+      .addTextArea((text) => {
+        text.setValue(this.result.notes || '').onChange((value) => {
+          this.result.notes = value;
+        });
+        text.inputEl.style.minHeight = '60px';
+        text.inputEl.style.resize = 'vertical';
       });
 
     // All day toggle

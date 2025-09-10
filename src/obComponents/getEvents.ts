@@ -86,11 +86,30 @@ export async function getEventsFromDailyNote(
         break;
       }
 
-      // Parse the line
-      const parsedLine = parseLine(line);
-
       // Check if line has time information or is a task
       if (lineContainsTime(line)) {
+        // Parse the main line
+        const parsedLine = parseLine(line);
+        
+        // Check for notes on the next line (indented with spaces)
+        let notes = '';
+        if (currentIndex + 1 < fileLines.length) {
+          const nextLine = fileLines[currentIndex + 1];
+          // Check if next line is indented and contains notes marker
+          if (nextLine.match(/^\s+📝\s?(.+)$/)) {
+            const notesMatch = nextLine.match(/^\s+📝\s?(.+)$/);
+            if (notesMatch) {
+              notes = notesMatch[1].trim();
+              currentIndex++; // Skip the notes line
+            }
+          }
+        }
+
+        // Add notes to parsed line if found
+        if (notes) {
+          parsedLine.notes = notes;
+        }
+
         // Convert to event - tasks without time info will be treated as all-day events
         const event = convertToEvent(parsedLine, startDate, currentIndex, dailyNote.path);
 

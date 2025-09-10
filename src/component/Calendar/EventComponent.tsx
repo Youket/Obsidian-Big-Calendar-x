@@ -78,6 +78,7 @@ const EventComponent: React.FC<EventProps<Event>> = ({
                   ...event,
                   eventType: result.eventType,
                   allDay: result.allDay,
+                  notes: result.notes,
                 },
                 result.startDate,
                 result.endDate,
@@ -210,11 +211,12 @@ const EventComponent: React.FC<EventProps<Event>> = ({
     return dateInfo;
   };
 
-  // Combine event title with date info for tooltip
+  // Combine event title with date info and notes for tooltip
   const getTooltipContent = () => {
     const originalTitle = typeof title === 'string' ? title : 'Event';
     const dateInfo = formatDateInfo();
-    return `${originalTitle}${dateInfo}`;
+    const notesInfo = event.notes ? `\n📝 ${event.notes}` : '';
+    return `${originalTitle}${dateInfo}${notesInfo}`;
   };
 
   // Style object for the event, can be customized based on event type

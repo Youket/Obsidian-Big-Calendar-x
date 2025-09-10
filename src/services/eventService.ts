@@ -204,9 +204,11 @@ class EventService {
    * @param event Event object to edit
    * @param startDate New start date
    * @param endDate New end date
+   * @param newTitle New title (optional)
+   * @param newNotes New notes (optional)
    * @returns Updated event or null
    */
-  public async editEvent(event: Model.Event, startDate: stringOrDate, endDate: stringOrDate, newTitle?: string) {
+  public async editEvent(event: Model.Event, startDate: stringOrDate, endDate: stringOrDate, newTitle?: string, newNotes?: string) {
     try {
       if (startDate && endDate && event.id && event.title) {
         // 记录原始ID以便跟踪
@@ -222,6 +224,7 @@ class EventService {
           endDate,
           new Date(event.end),
           event.path,
+          newNotes || event.notes,
         );
 
         // 检查updatedEvent.id与原始event.id是否相同
@@ -420,10 +423,11 @@ class EventService {
    * @param text Event content
    * @param startDate Start date
    * @param endDate End date
+   * @param notes Event notes (optional)
    * @returns Created event object
    */
-  public async createEvent(text: string, startDate: stringOrDate, endDate: stringOrDate): Promise<Model.Event> {
-    return await waitForInsert(text, startDate, endDate);
+  public async createEvent(text: string, startDate: stringOrDate, endDate: stringOrDate, notes?: string): Promise<Model.Event> {
+    return await waitForInsert(text, startDate, endDate, notes);
   }
 
   /**
@@ -435,6 +439,7 @@ class EventService {
    * @param startDate Start date
    * @param endDate End date
    * @param originalEndDate Original end date
+   * @param notes Event notes (optional)
    * @returns Updated event or null
    */
   public async updateEvent(
@@ -443,6 +448,7 @@ class EventService {
     type: string,
     startDate: stringOrDate,
     endDate: stringOrDate,
+    notes?: string,
   ): Promise<Model.Event> {
     const event = this.getEventById(eventId);
     if (!event) {
@@ -454,6 +460,7 @@ class EventService {
         ...event,
         title: text,
         eventType: type,
+        notes: notes,
       },
       startDate,
       endDate,
@@ -519,6 +526,8 @@ class EventService {
    * @param eventStartDate Start date
    * @param eventEndDate End date
    * @param originalEndDate Original end date
+   * @param originalPath Original file path
+   * @param notes Event notes (optional)
    * @returns Updated event
    */
   public async updateEventInFile(
@@ -529,6 +538,7 @@ class EventService {
     eventEndDate: stringOrDate,
     originalEndDate: Date,
     originalPath: string,
+    notes?: string,
   ): Promise<Model.Event> {
     return await changeEvent(
       eventId,
@@ -539,6 +549,7 @@ class EventService {
       eventEndDate,
       originalEndDate,
       originalPath,
+      notes,
     );
   }
 

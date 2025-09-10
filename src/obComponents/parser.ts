@@ -108,6 +108,7 @@ export interface ParsedLine {
   hasRecurrence: boolean;
   recurrenceRule?: string;
   blockLink?: string;
+  notes?: string;
 
   // Line type information
   isListItem: boolean;
@@ -137,6 +138,7 @@ export const PATTERNS = {
   // Additional markers
   RECURRENCE: /🔁([a-zA-Z0-9, !]+)$/,
   BLOCK_LINK: /\s\^([a-zA-Z0-9-]+)$/,
+  NOTES: /📝\s?(.+)$/,
 };
 
 /**
@@ -302,15 +304,27 @@ export function extractBlockLink(line: string): string | undefined {
 }
 
 /**
+ * Extracts notes information from a line
+ *
+ * @param line The text line to parse
+ * @returns Notes text if found
+ */
+export function extractNotes(line: string): string | undefined {
+  const match = line.match(PATTERNS.NOTES);
+  return match ? match[1].trim() : undefined;
+}
+
+/**
  * Cleans the content by removing metadata markers
  *
  * @param content The original content text
  * @param dates Array of date information to remove
  * @param recurrenceRule Recurrence rule to remove (if present)
  * @param blockLink Block link to remove (if present)
+ * @param notes Notes to remove (if present)
  * @returns Cleaned content text
  */
-export function cleanContent(content: string, dates: DateInfo[], recurrenceRule?: string, blockLink?: string): string {
+export function cleanContent(content: string, dates: DateInfo[], recurrenceRule?: string, blockLink?: string, notes?: string): string {
   let result = content;
 
   // Remove dates
@@ -328,6 +342,11 @@ export function cleanContent(content: string, dates: DateInfo[], recurrenceRule?
   // Remove block link
   if (blockLink) {
     result = result.replace(`^${blockLink}`, '');
+  }
+
+  // Remove notes
+  if (notes) {
+    result = result.replace(`📝 ${notes}`, '');
   }
 
   // Remove end time markers
@@ -398,8 +417,11 @@ export function parseLine(line: string): ParsedLine {
   // Extract block link
   result.blockLink = extractBlockLink(result.content);
 
+  // Extract notes
+  result.notes = extractNotes(result.content);
+
   // Clean content by removing metadata markers
-  result.content = cleanContent(result.content, result.dates, result.recurrenceRule, result.blockLink);
+  result.content = cleanContent(result.content, result.dates, result.recurrenceRule, result.blockLink, result.notes);
 
   return result;
 }
@@ -619,6 +641,10 @@ export function convertToEvent(
 
   if (parsedLine.blockLink) {
     event.blockLink = parsedLine.blockLink;
+  }
+
+  if (parsedLine.notes) {
+    event.notes = parsedLine.notes;
   }
 
   return event;

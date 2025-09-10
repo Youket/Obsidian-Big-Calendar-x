@@ -7,6 +7,7 @@ export interface EventCreateResult {
   content: string;
   startDate: Date;
   endDate: Date;
+  notes?: string; // 事件备注
 }
 
 export default class EventCreatePrompt extends Modal {
@@ -17,7 +18,9 @@ export default class EventCreatePrompt extends Modal {
   //eslint-disable-next-line
   private didSubmit: boolean = false;
   private contentComponent: TextComponent;
+  private notesComponent: TextComponent;
   private content: string;
+  private notes: string;
   private startDate: Date;
   private endDate: Date;
   private readonly placeholder: string;
@@ -45,6 +48,7 @@ export default class EventCreatePrompt extends Modal {
     super(app);
     this.placeholder = placeholder;
     this.content = value || '';
+    this.notes = '';
 
     // Initialize with preset time or current time
     const now = new Date();
@@ -77,6 +81,11 @@ export default class EventCreatePrompt extends Modal {
     new Setting(mainContentContainer).setName('Event content').setDesc('Enter the content for your event');
 
     this.contentComponent = this.createInputField(mainContentContainer, this.placeholder, this.content);
+
+    // Event notes input
+    new Setting(mainContentContainer).setName('Event notes').setDesc('Enter additional notes for your event (optional)');
+
+    this.notesComponent = this.createNotesField(mainContentContainer, 'Enter event notes...', this.notes);
 
     // Start date and time
     this.createDateTimePicker(mainContentContainer, 'Start date and time', this.startDate, (date) => {
@@ -169,6 +178,21 @@ export default class EventCreatePrompt extends Modal {
     return textComponent;
   }
 
+  protected createNotesField(container: HTMLElement, placeholder?: string, value?: string) {
+    const textComponent = new TextComponent(container);
+
+    textComponent.inputEl.style.width = '100%';
+    textComponent.inputEl.style.marginBottom = '1rem';
+    textComponent.inputEl.style.minHeight = '60px';
+    textComponent.inputEl.style.resize = 'vertical';
+    textComponent
+      .setPlaceholder(placeholder ?? '')
+      .setValue(value ?? '')
+      .onChange((value) => (this.notes = value));
+
+    return textComponent;
+  }
+
   private createButton(container: HTMLElement, text: string, callback: (evt: MouseEvent) => any) {
     const btn = new ButtonComponent(container);
     btn.setButtonText(text).onClick(callback);
@@ -230,6 +254,7 @@ export default class EventCreatePrompt extends Modal {
         content: this.content,
         startDate: this.startDate,
         endDate: this.endDate,
+        notes: this.notes,
       });
   }
 
@@ -260,7 +285,7 @@ export default class EventCreatePrompt extends Modal {
   ): Promise<Model.Event | null> {
     try {
       const result = await EventCreatePrompt.Prompt(app, header, placeholder, '', presetStartDate, presetEndDate);
-      return await eventService.createEvent(result.content, result.startDate, result.endDate);
+      return await eventService.createEvent(result.content, result.startDate, result.endDate, result.notes);
     } catch (error) {
       console.error('Event creation cancelled or failed:', error);
       return null;

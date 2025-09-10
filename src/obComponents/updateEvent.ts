@@ -27,6 +27,7 @@ export async function changeEvent(
   eventEndDate: stringOrDate,
   originalEndDate: Date,
   originalPath: string,
+  notes?: string,
 ): Promise<Model.Event> {
   return await safeExecute(async () => {
     const {app} = fileService.getState();
@@ -83,7 +84,7 @@ export async function changeEvent(
         newLine = formatAllDayEvent(cleanContent, originalStartDate, eventStartMoment, eventEndMoment, eventType);
       } else {
         // For regular events or if time was added, use standard formatting
-        newLine = formatEventLine(cleanContent, eventStartMoment, eventEndMoment, eventType);
+        newLine = formatEventLine(cleanContent, eventStartMoment, eventEndMoment, eventType, notes);
       }
 
       // Update the file
@@ -229,7 +230,7 @@ async function updateTimeIntervalOnly(
     newLine = formatAllDayEvent(cleanContent, originalStartDate, eventStartMoment, eventEndMoment, eventType);
   } else {
     // For regular events or if time was added, use standard formatting
-    newLine = formatEventLine(cleanContent, eventStartMoment, eventEndMoment, eventType);
+    newLine = formatEventLine(cleanContent, eventStartMoment, eventEndMoment, eventType, notes);
   }
 
   // Update the file
@@ -305,7 +306,7 @@ async function updateEndDateOnly(
       : `- ${startTime}-${endTime} ${cleanContent}`;
   } else {
     // Otherwise use the standard formatting function
-    newLine = formatEventLine(cleanContent, eventStartMoment, eventEndMoment, eventType);
+    newLine = formatEventLine(cleanContent, eventStartMoment, eventEndMoment, eventType, notes);
   }
 
   // Update the file
@@ -386,7 +387,7 @@ async function moveEventToNewDay(
       ? `- [${mark}] ${startTime}-${endTime} ${cleanContent}`
       : `- ${startTime}-${endTime} ${cleanContent}`;
   } else {
-    newLine = formatEventLine(cleanContent, eventStartMoment, eventEndMoment, eventType);
+    newLine = formatEventLine(cleanContent, eventStartMoment, eventEndMoment, eventType, notes);
   }
 
   // Remove from original file
@@ -463,6 +464,7 @@ export function formatEventLine(
   startMoment: moment.Moment,
   endMoment: moment.Moment,
   eventType: string,
+  notes?: string,
 ): string {
   const timeHour = startMoment.format('HH');
   const timeMinute = startMoment.format('mm');
@@ -491,6 +493,11 @@ export function formatEventLine(
     newLine = mark
       ? `- [${mark}] ${processedContent} 🛫 ${startMoment.format('YYYY-MM-DD')} 📅 ${endMoment.format('YYYY-MM-DD')}`
       : `- ${processedContent} 🛫 ${startMoment.format('YYYY-MM-DD')} 📅 ${endMoment.format('YYYY-MM-DD')}`;
+  }
+
+  // Add notes if provided
+  if (notes && notes.trim()) {
+    newLine += `\n  📝 ${notes.trim()}`;
   }
 
   // Add block ID back at the end if it exists
