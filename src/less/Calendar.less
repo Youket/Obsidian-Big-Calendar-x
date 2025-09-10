@@ -451,6 +451,52 @@ button.rbc-input::-moz-focus-inner {
   text-align: left;
   border-bottom: 1px solid var(--background-modifier-border);
 }
+
+/* 为议程视图的列设置固定宽度 */
+.rbc-agenda-view table.rbc-agenda-table thead > tr > th:first-child {
+  width: 140px; /* 日期列宽度 */
+}
+
+.rbc-agenda-view table.rbc-agenda-table thead > tr > th:nth-child(2) {
+  width: 100px; /* 时间列宽度 */
+}
+
+.rbc-agenda-view table.rbc-agenda-table thead > tr > th:last-child {
+  width: auto; /* 事件列自动填充剩余空间 */
+}
+
+/* 修复议程视图表格显示问题 */
+.rbc-agenda-view table.rbc-agenda-table {
+  table-layout: auto; /* 改为自动布局 */
+}
+
+.rbc-agenda-view table.rbc-agenda-table thead > tr > th {
+  text-align: left;
+  font-weight: normal;
+  background-color: var(--background-secondary);
+  color: var(--text-normal);
+}
+
+.rbc-agenda-view table.rbc-agenda-table tbody > tr > td {
+  border: none;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.rbc-agenda-view table.rbc-agenda-table tbody > tr > td:first-child {
+  width: 140px;
+  min-width: 140px;
+  max-width: 140px;
+}
+
+.rbc-agenda-view table.rbc-agenda-table tbody > tr > td:nth-child(2) {
+  width: 100px;
+  min-width: 100px;
+  max-width: 100px;
+}
+
+.rbc-agenda-view table.rbc-agenda-table tbody > tr > td:last-child {
+  width: auto;
+}
 .rbc-rtl .rbc-agenda-view table.rbc-agenda-table thead > tr > th {
   text-align: right;
 }
@@ -468,11 +514,34 @@ button.rbc-input::-moz-focus-inner {
 .rbc-agenda-date-cell,
 .rbc-agenda-time-cell {
   white-space: nowrap;
+  min-width: 120px; /* 增加最小宽度以确保日期完整显示 */
+  max-width: 150px; /* 设置最大宽度避免过宽 */
 }
 
 .rbc-agenda-event-cell {
   width: 100%;
   position: relative;
+}
+
+/* 确保议程视图表格行高一致 */
+.rbc-agenda-view table.rbc-agenda-table tbody > tr {
+  height: auto;
+  min-height: 40px;
+}
+
+/* 修复议程视图中的事件显示 */
+.rbc-agenda-view .rbc-event {
+  margin: 2px 0;
+  padding: 2px 4px;
+  border-radius: 3px;
+  background-color: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
+
+/* 确保议程视图中的复选框正确显示 */
+.rbc-agenda-view .task-list-item-checkbox {
+  margin-right: 6px;
+  vertical-align: middle;
 }
 
 .rbc-time-column {
