@@ -51,11 +51,11 @@ The plugin recognizes the following formats in your daily notes:
 ### BRAT (Beta Reviewer's Auto-update Tool)
 
 1. Install [BRAT](https://github.com/TfTHacker/obsidian42-brat)
-2. Add `Quorafind/Obsidian-Big-Calendar` to BRAT
+2. Add `Youket/Obsidian-Big-Calendar-x` to BRAT
 
 ### Manual Installation
 
-1. Download the latest release from [GitHub](https://github.com/Quorafind/Obsidian-Big-Calendar/releases)
+1. Download the latest release from [GitHub](https://github.com/Youket/Obsidian-Big-Calendar-x/releases)
 2. Extract the files (main.js, manifest.json, styles.css) to your vault's plugins folder: `{{obsidian_vault}}/.obsidian/plugins/Obsidian-Big-Calendar`
 3. Reload Obsidian
 4. Enable the plugin in Obsidian settings

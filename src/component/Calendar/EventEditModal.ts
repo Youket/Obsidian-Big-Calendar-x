@@ -1,5 +1,6 @@
 import {App, Modal, Setting, moment} from 'obsidian';
 import {eventService} from '@/services';
+import {t} from '@/translations/helper';
 
 interface EventEditResult {
   title: string;
@@ -39,15 +40,15 @@ export default class EventEditModal extends Modal {
     const {contentEl, titleEl} = this;
 
     // Set the modal title
-    titleEl.setText('Edit Event');
+    titleEl.setText(t('Edit Event'));
 
     // Create form container
     const formContainer = contentEl.createDiv({cls: 'event-edit-form'});
 
     // Event title
     new Setting(formContainer)
-      .setName('Title')
-      .setDesc('Event title')
+      .setName(t('Title'))
+      .setDesc(t('Event title'))
       .addText((text) => {
         text.setValue(this.result.title).onChange((value) => {
           this.result.title = value;
@@ -56,8 +57,8 @@ export default class EventEditModal extends Modal {
 
     // Event type selector
     new Setting(formContainer)
-      .setName('Event Type')
-      .setDesc('Type of event')
+      .setName(t('Event Type'))
+      .setDesc(t('Type of event'))
       .addDropdown((dropdown) => {
         // Add event type options
         const eventTypes = [
@@ -81,14 +82,48 @@ export default class EventEditModal extends Modal {
 
     // Event notes
     new Setting(formContainer)
-      .setName('Notes')
-      .setDesc('Additional notes for the event (optional)')
+      .setName(t('Notes'))
+      .setDesc(t('Additional notes for the event (optional)'))
       .addTextArea((text) => {
         text.setValue(this.result.notes || '').onChange((value) => {
           this.result.notes = value;
         });
-        text.inputEl.style.minHeight = '60px';
+        
+        // 设置输入框样式
+        text.inputEl.style.minHeight = '80px';
+        text.inputEl.style.maxHeight = '300px';
         text.inputEl.style.resize = 'vertical';
+        text.inputEl.style.overflow = 'auto';
+        text.inputEl.style.fontFamily = 'var(--font-monospace)';
+        text.inputEl.style.lineHeight = '1.4';
+        text.inputEl.style.padding = '8px 12px';
+        text.inputEl.style.borderRadius = '4px';
+        text.inputEl.style.border = '1px solid var(--background-modifier-border)';
+        text.inputEl.style.backgroundColor = 'var(--background-primary)';
+        text.inputEl.style.color = 'var(--text-normal)';
+        text.inputEl.style.width = '100%';
+        text.inputEl.style.boxSizing = 'border-box';
+        
+        // 确保 textarea 可以正确换行
+        text.inputEl.addEventListener('keydown', (e) => {
+          // 允许 Enter 键换行
+          if (e.key === 'Enter') {
+            // 不阻止默认行为，允许换行
+            return;
+          }
+          
+          // 处理 Tab 键
+          if (e.key === 'Tab') {
+            e.preventDefault();
+            // 插入制表符
+            const start = text.inputEl.selectionStart;
+            const end = text.inputEl.selectionEnd;
+            const textValue = text.inputEl.value;
+            text.inputEl.value = textValue.substring(0, start) + '\t' + textValue.substring(end);
+            text.inputEl.selectionStart = text.inputEl.selectionEnd = start + 1;
+            this.result.notes = text.inputEl.value;
+          }
+        });
       });
 
     // All day toggle
@@ -103,8 +138,8 @@ export default class EventEditModal extends Modal {
 
     // Start date and time
     new Setting(formContainer)
-      .setName('Start Date')
-      .setDesc('When the event starts')
+      .setName(t('Start Date'))
+      .setDesc(t('When the event starts'))
       .addText((text) => {
         const dateString = moment(this.result.startDate).format('YYYY-MM-DD HH:mm');
         text.setValue(dateString).onChange((value) => {
@@ -117,8 +152,8 @@ export default class EventEditModal extends Modal {
 
     // End date and time
     new Setting(formContainer)
-      .setName('End Date')
-      .setDesc('When the event ends')
+      .setName(t('End Date'))
+      .setDesc(t('When the event ends'))
       .addText((text) => {
         const dateString = moment(this.result.endDate).format('YYYY-MM-DD HH:mm');
         text.setValue(dateString).onChange((value) => {
@@ -134,7 +169,7 @@ export default class EventEditModal extends Modal {
 
     // Save button
     const saveButton = buttonsContainer.createEl('button', {
-      text: 'Save',
+      text: t('Save'),
       cls: 'mod-cta',
     });
 
@@ -145,7 +180,7 @@ export default class EventEditModal extends Modal {
 
     // Cancel button
     const cancelButton = buttonsContainer.createEl('button', {
-      text: 'Cancel',
+      text: t('Cancel'),
     });
 
     cancelButton.addEventListener('click', () => {

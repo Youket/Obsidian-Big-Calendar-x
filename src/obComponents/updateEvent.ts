@@ -72,8 +72,8 @@ export async function changeEvent(
         throw new Error('Could not find the event line in the file');
       }
 
-      // Clean the content
-      const cleanContent = cleanEventContent(originalContent, content);
+      // Clean the event
+      const cleanContent = cleanEvent(originalContent, content);
 
       // Format the line
       let newLine;
@@ -218,8 +218,8 @@ async function updateTimeIntervalOnly(
     throw new Error('Could not find the event line in the file');
   }
 
-  // Clean the content
-  const cleanContent = cleanEventContent(originalContent, content);
+  // Clean the event
+  const cleanContent = cleanEvent(originalContent, content);
 
   // Format the line
   let newLine;
@@ -285,8 +285,8 @@ async function updateEndDateOnly(
     throw new Error('Could not find the event line in the file');
   }
 
-  // Clean the content
-  const cleanContent = cleanEventContent(originalContent, content);
+  // Clean the event
+  const cleanContent = cleanEvent(originalContent, content);
   const sameDay = eventStartMoment.isSame(eventEndMoment, 'day');
 
   // Format the line
@@ -370,8 +370,8 @@ async function moveEventToNewDay(
     throw new Error('Could not find the event line in the file');
   }
 
-  // Clean the content
-  const cleanContent = cleanEventContent(originalContent, content);
+  // Clean the event
+  const cleanContent = cleanEvent(originalContent, content);
   const mark = getMarkBasedOnEvent(eventType);
 
   // Format the line appropriately
@@ -423,9 +423,9 @@ async function moveEventToNewDay(
 }
 
 /**
- * Cleans the event content by removing time and date information
+ * Cleans the event by removing time and date information
  */
-function cleanEventContent(originalContent: string, content: string): string {
+function cleanEvent(originalContent: string, content: string): string {
   // Always start with the new content provided by the user
   let cleanContent = content;
 
@@ -497,7 +497,10 @@ export function formatEventLine(
 
   // Add notes if provided
   if (notes && notes.trim()) {
-    newLine += `\n  📝 ${notes.trim()}`;
+    // 处理多行备注，每行都添加制表符缩进
+    const notesLines = notes.trim().split('\n');
+    const indentedNotes = notesLines.map(line => `\t${line}`).join('\n');
+    newLine += `\n${indentedNotes}`;
   }
 
   // Add block ID back at the end if it exists

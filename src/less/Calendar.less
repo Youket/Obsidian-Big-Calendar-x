@@ -544,6 +544,106 @@ button.rbc-input::-moz-focus-inner {
   vertical-align: middle;
 }
 
+/* 事件复选框交互样式 */
+.event-type-marker .task-list-item-checkbox {
+  cursor: pointer;
+  margin-right: 6px;
+  vertical-align: middle;
+  transform: scale(1.1);
+  transition: all 0.2s ease;
+}
+
+.event-type-marker .task-list-item-checkbox:hover {
+  transform: scale(1.2);
+  filter: brightness(1.2);
+}
+
+.event-type-marker .task-list-item-checkbox:active {
+  transform: scale(0.95);
+}
+
+/* 确保复选框在事件中正确对齐 */
+.rbc-event-content {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.event-type-marker {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.event-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 备注输入框样式优化 */
+.event-edit-form textarea,
+.modal textarea {
+  resize: vertical !important;
+  min-height: 80px !important;
+  max-height: 300px !important;
+  font-family: var(--font-monospace) !important;
+  line-height: 1.4 !important;
+  padding: 8px 12px !important;
+  border-radius: 4px !important;
+  border: 1px solid var(--background-modifier-border) !important;
+  background-color: var(--background-primary) !important;
+  color: var(--text-normal) !important;
+  transition: border-color 0.2s ease !important;
+}
+
+.event-edit-form textarea:focus,
+.modal textarea:focus {
+  border-color: var(--interactive-accent) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px var(--interactive-accent-alpha) !important;
+}
+
+/* 备注输入框的拖拽手柄样式 */
+.event-edit-form textarea::-webkit-resizer,
+.modal textarea::-webkit-resizer {
+  background: var(--interactive-accent);
+  border-radius: 2px;
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--background-modifier-border);
+}
+
+/* 确保 textarea 可以拖拽调整大小 */
+.event-edit-form textarea,
+.modal textarea {
+  resize: vertical !important;
+  min-height: 80px !important;
+  max-height: 300px !important;
+  font-family: var(--font-monospace) !important;
+  line-height: 1.4 !important;
+  padding: 8px 12px !important;
+  border-radius: 4px !important;
+  border: 1px solid var(--background-modifier-border) !important;
+  background-color: var(--background-primary) !important;
+  color: var(--text-normal) !important;
+  transition: border-color 0.2s ease !important;
+  box-sizing: border-box !important;
+  overflow: auto !important;
+}
+
+/* 确保备注输入框在模态框中正确显示 */
+.modal .setting-item-description {
+  margin-bottom: 8px;
+  color: var(--text-muted);
+}
+
+.modal .setting-item-control {
+  width: 100%;
+}
+
 .rbc-time-column {
   display: flex;
   flex-direction: column;

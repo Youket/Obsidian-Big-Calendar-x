@@ -152,7 +152,7 @@ export function createDeletedEventIdRegex(): RegExp {
  *
  * @returns RegExp object for matching deleted event content
  */
-export function createDeletedEventContentRegex(): RegExp {
+export function createDeletedEventRegex(): RegExp {
   return /^- (\d+)\s(.+)\s(deletedAt: )(.+)$/;
 }
 
@@ -181,8 +181,8 @@ export function extractDeletedEventId(line: string): string | undefined {
  * @param line The line to extract from
  * @returns The content or undefined if not found
  */
-export function extractDeletedEventContent(line: string): string | undefined {
-  return createDeletedEventContentRegex().exec(line)?.[2];
+export function extractDeletedEvent(line: string): string | undefined {
+  return createDeletedEventRegex().exec(line)?.[2];
 }
 
 /**

@@ -91,18 +91,40 @@ export async function getEventsFromDailyNote(
         // Parse the main line
         const parsedLine = parseLine(line);
         
-        // Check for notes on the next line (indented with spaces)
+        // Check for notes on the next lines (indented with tab)
         let notes = '';
-        if (currentIndex + 1 < fileLines.length) {
-          const nextLine = fileLines[currentIndex + 1];
-          // Check if next line is indented and contains notes marker
-          if (nextLine.match(/^\s+📝\s?(.+)$/)) {
-            const notesMatch = nextLine.match(/^\s+📝\s?(.+)$/);
+        let notesLines: string[] = [];
+        
+        // 检查后续的缩进行，收集所有备注内容
+        let checkIndex = currentIndex + 1;
+        while (checkIndex < fileLines.length) {
+          const checkLine = fileLines[checkIndex];
+          
+          // 如果行以制表符开头，说明是备注内容
+          if (checkLine.match(/^\t(.+)$/)) {
+            const notesMatch = checkLine.match(/^\t(.+)$/);
             if (notesMatch) {
-              notes = notesMatch[1].trim();
-              currentIndex++; // Skip the notes line
+              notesLines.push(notesMatch[1]);
+              checkIndex++;
+            } else {
+              break;
+            }
+          } else {
+            // 如果遇到空行，也认为是备注的一部分
+            if (checkLine.trim() === '') {
+              notesLines.push('');
+              checkIndex++;
+            } else {
+              // 遇到非缩进行，停止收集备注
+              break;
             }
           }
+        }
+        
+        // 如果有备注内容，合并所有行
+        if (notesLines.length > 0) {
+          notes = notesLines.join('\n');
+          currentIndex = checkIndex - 1; // 更新当前索引，跳过所有备注行
         }
 
         // Add notes to parsed line if found

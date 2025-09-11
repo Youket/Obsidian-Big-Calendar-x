@@ -4,7 +4,7 @@ import {createDailyNote, getAllDailyNotes, getDailyNote} from 'obsidian-daily-no
 import {insertAfterHandler} from './createEvent';
 import fileService from '../services/fileService';
 import {getAllLinesFromFile, getDailyNotePath, safeExecute} from '../api';
-import {extractDeletedEventId, extractDeletedEventContent, extractDeletedEventDate} from '../utils/regexGenerators';
+import {extractDeletedEventId, extractDeletedEvent, extractDeletedEventDate} from '../utils/regexGenerators';
 
 /**
  * Restores a deleted event from the delete.md file back to its original daily note
@@ -49,7 +49,7 @@ export async function restoreDeletedEvent(deletedEventid: string): Promise<any[]
     const timeHour = date.format('HH');
     const timeMinute = date.format('mm');
 
-    const newEvent = `- ${timeHour}:${timeMinute} ${extractDeletedEventContent(line)}`;
+    const newEvent = `- ${timeHour}:${timeMinute} ${extractDeletedEvent(line)}`;
     const dailyNotes = await getAllDailyNotes();
     const existingFile = getDailyNote(date, dailyNotes);
 
@@ -148,7 +148,7 @@ export async function getDeletedEvents(): Promise<any[]> {
       if (!deletedDateID) continue;
 
       const deletedDate = moment(deletedDateID.slice(0, 13), 'YYYYMMDDHHmmss');
-      const content = extractDeletedEventContent(line);
+      const content = extractDeletedEvent(line);
       if (!content) continue;
 
       deletedEvents.push({
@@ -168,10 +168,10 @@ export async function getDeletedEvents(): Promise<any[]> {
 /**
  * Sends an event to the delete.md file
  *
- * @param eventContent The content of the event to delete
+ * @param event The content of the event to delete
  * @returns Promise resolving to the deletion date
  */
-export const sendEventToDelete = async (eventContent: string): Promise<any> => {
+export const sendEventToDelete = async (event: string): Promise<any> => {
   return await safeExecute(async () => {
     const {metadataCache, vault} = fileService.getState().app;
 
@@ -194,7 +194,7 @@ export const sendEventToDelete = async (eventContent: string): Promise<any> => {
       }
 
       const deleteDateID = date.format('YYYYMMDDHHmmss') + lineNum;
-      await createDeleteEventInFile(deleteFile, fileContents, eventContent, deleteDateID);
+      await createDeleteEventInFile(deleteFile, fileContents, event, deleteDateID);
 
       return deleteDate;
     } else {
@@ -204,7 +204,7 @@ export const sendEventToDelete = async (eventContent: string): Promise<any> => {
       const lineNum = 1;
       const deleteDateID = date.format('YYYYMMDDHHmmss') + lineNum;
 
-      await createDeleteEventInFile(file, '', eventContent, deleteDateID);
+      await createDeleteEventInFile(file, '', event, deleteDateID);
 
       return deleteDate;
     }
@@ -216,14 +216,14 @@ export const sendEventToDelete = async (eventContent: string): Promise<any> => {
  *
  * @param file The delete.md file
  * @param fileContent The current content of the file
- * @param eventContent The content of the event to delete
+ * @param event The content of the event to delete
  * @param deleteDate The deletion date
  * @returns Promise resolving to true if successful
  */
 export const createDeleteEventInFile = async (
   file: TFile,
   fileContent: string,
-  eventContent: string,
+  event: string,
   deleteDate: string,
 ): Promise<any> => {
   return await safeExecute(async () => {
@@ -231,9 +231,9 @@ export const createDeleteEventInFile = async (
     let newContent;
 
     if (fileContent === '') {
-      newContent = eventContent + ' deletedAt: ' + deleteDate;
+      newContent = event + ' deletedAt: ' + deleteDate;
     } else {
-      newContent = fileContent + '\n' + eventContent + ' deletedAt: ' + deleteDate;
+      newContent = fileContent + '\n' + event + ' deletedAt: ' + deleteDate;
     }
 
     await vault.modify(file, newContent);

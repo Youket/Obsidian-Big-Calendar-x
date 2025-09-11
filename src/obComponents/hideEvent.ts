@@ -39,7 +39,7 @@ export async function hideEvent(eventid: string): Promise<any> {
       throw new Error(`Event line ${idString} not found in file`);
     }
 
-    // 提取事件内容
+    // 提取事件
     const content = extractContentfromText(fileLines[idString], settings);
     const originalLine = '- ' + eventid + ' ' + content;
     const newLine = fileLines[idString];
@@ -73,7 +73,7 @@ export async function hideEvent(eventid: string): Promise<any> {
 const getAllLinesFromFile = (cache: string): string[] => cache.split(/\r?\n/);
 
 /**
- * 从行中提取事件内容
+ * 从行中提取事件
  *
  * @param line 要提取的行
  * @param settings 设置对象

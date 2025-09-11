@@ -138,7 +138,7 @@ export const PATTERNS = {
   // Additional markers
   RECURRENCE: /🔁([a-zA-Z0-9, !]+)$/,
   BLOCK_LINK: /\s\^([a-zA-Z0-9-]+)$/,
-  NOTES: /📝\s?(.+)$/,
+  NOTES: /^\t(.+)$/,
 };
 
 /**
@@ -346,7 +346,10 @@ export function cleanContent(content: string, dates: DateInfo[], recurrenceRule?
 
   // Remove notes
   if (notes) {
-    result = result.replace(`📝 ${notes}`, '');
+    // 处理多行备注的清理
+    const notesLines = notes.split('\n');
+    const indentedNotes = notesLines.map(line => `\t${line}`).join('\n');
+    result = result.replace(`\n${indentedNotes}`, '');
   }
 
   // Remove end time markers

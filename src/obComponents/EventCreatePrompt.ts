@@ -2,6 +2,7 @@
 import {App, ButtonComponent, Modal, TextComponent, Setting, moment} from 'obsidian';
 import {stringOrDate} from 'react-big-calendar';
 import eventService from '@/services/eventService';
+import {t} from '@/translations/helper';
 
 export interface EventCreateResult {
   content: string;
@@ -18,7 +19,7 @@ export default class EventCreatePrompt extends Modal {
   //eslint-disable-next-line
   private didSubmit: boolean = false;
   private contentComponent: TextComponent;
-  private notesComponent: TextComponent;
+  private notesComponent: HTMLTextAreaElement;
   private content: string;
   private notes: string;
   private startDate: Date;
@@ -78,17 +79,17 @@ export default class EventCreatePrompt extends Modal {
     mainContentContainer.style.minWidth = '300px';
 
     // Event content input
-    new Setting(mainContentContainer).setName('Event content').setDesc('Enter the content for your event');
+    new Setting(mainContentContainer).setName(t('Event content')).setDesc(t('Enter the content for your event'));
 
     this.contentComponent = this.createInputField(mainContentContainer, this.placeholder, this.content);
 
     // Event notes input
-    new Setting(mainContentContainer).setName('Event notes').setDesc('Enter additional notes for your event (optional)');
+    new Setting(mainContentContainer).setName(t('Event notes')).setDesc(t('Enter additional notes for your event (optional)'));
 
-    this.notesComponent = this.createNotesField(mainContentContainer, 'Enter event notes...', this.notes);
+    this.notesComponent = this.createNotesField(mainContentContainer, t('Enter event notes...'), this.notes);
 
     // Start date and time
-    this.createDateTimePicker(mainContentContainer, 'Start date and time', this.startDate, (date) => {
+    this.createDateTimePicker(mainContentContainer, t('Start date and time'), this.startDate, (date) => {
       this.startDate = date;
 
       // If end time is before start time, update end time to start time + 1 hour
@@ -106,7 +107,7 @@ export default class EventCreatePrompt extends Modal {
     // End date and time
     this.createDateTimePicker(
       mainContentContainer,
-      'End date and time',
+      t('End date and time'),
       this.endDate,
       (date) => {
         this.endDate = date;
@@ -179,18 +180,55 @@ export default class EventCreatePrompt extends Modal {
   }
 
   protected createNotesField(container: HTMLElement, placeholder?: string, value?: string) {
-    const textComponent = new TextComponent(container);
+    // 创建 textarea 元素而不是 TextComponent
+    const textarea = container.createEl('textarea', {
+      placeholder: placeholder ?? '',
+      value: value ?? '',
+    });
 
-    textComponent.inputEl.style.width = '100%';
-    textComponent.inputEl.style.marginBottom = '1rem';
-    textComponent.inputEl.style.minHeight = '60px';
-    textComponent.inputEl.style.resize = 'vertical';
-    textComponent
-      .setPlaceholder(placeholder ?? '')
-      .setValue(value ?? '')
-      .onChange((value) => (this.notes = value));
+    // 设置输入框样式
+    textarea.style.width = '100%';
+    textarea.style.marginBottom = '1rem';
+    textarea.style.minHeight = '80px';
+    textarea.style.maxHeight = '300px';
+    textarea.style.resize = 'vertical';
+    textarea.style.overflow = 'auto';
+    textarea.style.fontFamily = 'var(--font-monospace)';
+    textarea.style.lineHeight = '1.4';
+    textarea.style.padding = '8px 12px';
+    textarea.style.borderRadius = '4px';
+    textarea.style.border = '1px solid var(--background-modifier-border)';
+    textarea.style.backgroundColor = 'var(--background-primary)';
+    textarea.style.color = 'var(--text-normal)';
+    textarea.style.boxSizing = 'border-box';
+    
+    // 设置值变化监听
+    textarea.addEventListener('input', (e) => {
+      this.notes = (e.target as HTMLTextAreaElement).value;
+    });
 
-    return textComponent;
+    // 设置键盘事件处理
+    textarea.addEventListener('keydown', (e) => {
+      // 允许 Enter 键换行
+      if (e.key === 'Enter') {
+        // 不阻止默认行为，允许换行
+        return;
+      }
+      
+      // 阻止其他可能干扰的键盘事件
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        // 插入制表符
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        textarea.value = text.substring(0, start) + '\t' + text.substring(end);
+        textarea.selectionStart = textarea.selectionEnd = start + 1;
+        this.notes = textarea.value;
+      }
+    });
+
+    return textarea;
   }
 
   private createButton(container: HTMLElement, text: string, callback: (evt: MouseEvent) => any) {
@@ -202,8 +240,8 @@ export default class EventCreatePrompt extends Modal {
 
   private createButtonBar(mainContentContainer: HTMLDivElement) {
     const buttonBarContainer: HTMLDivElement = mainContentContainer.createDiv();
-    this.createButton(buttonBarContainer, 'Create', this.submitClickCallback).setCta().buttonEl.style.marginRight = '0';
-    this.createButton(buttonBarContainer, 'Cancel', this.cancelClickCallback);
+    this.createButton(buttonBarContainer, t('Create'), this.submitClickCallback).setCta().buttonEl.style.marginRight = '0';
+    this.createButton(buttonBarContainer, t('Cancel'), this.cancelClickCallback);
 
     buttonBarContainer.style.display = 'flex';
     buttonBarContainer.style.flexDirection = 'row-reverse';

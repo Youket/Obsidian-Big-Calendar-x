@@ -34,7 +34,7 @@ export function getLinesInString(input: string): string[] {
 }
 
 export async function waitForInsert(
-  EventContent: string,
+  Event: string,
   startDate: stringOrDate,
   endDate: stringOrDate,
   notes?: string,
@@ -52,7 +52,7 @@ export async function waitForInsert(
 
     // Format the content based on event type
     const formattedContent = formatEventLine(
-      EventContent,
+      Event,
       startMoment,
       endMoment,
       isMultiDayEvent ? 'TASK-TODO' : 'default',
@@ -120,7 +120,7 @@ async function insertEventIntoNote(
  * Creates an event object from the given parameters
  */
 function createEventObject(
-  eventContent: string,
+  event: string,
   startMoment: moment.Moment,
   endMoment: moment.Moment,
   startTimeHour: string,
@@ -134,7 +134,7 @@ function createEventObject(
 
   return {
     id: eventId,
-    title: eventContent,
+    title: event,
     start: new Date(
       startMoment.year(),
       startMoment.month(),

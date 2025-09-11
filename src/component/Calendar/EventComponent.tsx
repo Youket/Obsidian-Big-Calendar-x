@@ -50,6 +50,43 @@ const EventComponent: React.FC<EventProps<Event>> = ({
   // Map of event types to their marker emojis
   const mark = getMarkBasedOnEvent(event.eventType);
 
+  // Handle checkbox click to toggle event status
+  const handleCheckboxClick = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent event selection when clicking checkbox
+    
+    try {
+      // Determine the new event type based on current state
+      let newEventType: string;
+      
+      if (event.eventType === 'TASK-TODO') {
+        // If currently TODO, mark as DONE
+        newEventType = 'TASK-DONE';
+      } else if (event.eventType === 'TASK-DONE') {
+        // If currently DONE, mark as TODO
+        newEventType = 'TASK-TODO';
+      } else {
+        // For other types, default to TODO
+        newEventType = 'TASK-TODO';
+      }
+
+      // Update the event with the new type
+      const updatedEvent = await eventService.updateEvent(
+        event.id,
+        event.title,
+        newEventType,
+        event.start,
+        event.end,
+        event.notes
+      );
+
+      if (updatedEvent) {
+        console.log(`Event status changed to ${newEventType}`);
+      }
+    } catch (error) {
+      console.error('Error toggling event status:', error);
+    }
+  };
+
   // Handle right-click to open context menu
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -215,7 +252,7 @@ const EventComponent: React.FC<EventProps<Event>> = ({
   const getTooltipContent = () => {
     const originalTitle = typeof title === 'string' ? title : 'Event';
     const dateInfo = formatDateInfo();
-    const notesInfo = event.notes ? `\n📝 ${event.notes}` : '';
+    const notesInfo = event.notes ? `\n备注: ${event.notes}` : '';
     return `${originalTitle}${dateInfo}${notesInfo}`;
   };
 
@@ -247,10 +284,11 @@ const EventComponent: React.FC<EventProps<Event>> = ({
         <span className="event-type-marker">
           <input
             data-task={mark}
-            readOnly
             checked={event.eventType !== 'TASK-TODO'}
             type="checkbox"
             className="task-list-item-checkbox"
+            onClick={handleCheckboxClick}
+            style={{ cursor: 'pointer' }}
           ></input>
         </span>
       )}

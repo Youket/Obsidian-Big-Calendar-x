@@ -16,7 +16,7 @@ export default {
     '只有在设置的标题后的事件 才会被解析。当为空时解析全文的事件',
   'Experimental Options': '实验性选项',
   'Set default event composition, you should use {TIME} as "HH:mm" and {CONTENT} as content. "{TIME} {CONTENT}" by default':
-    '设置默认事件组成，你可以使用 {TIME} 作为 "HH:mm" 和 {CONTENT} 作为内容。默认为 "{TIME} {CONTENT}"',
+    '设置默认事件组成，你可以使用 {TIME} 作为 "HH:mm" 和 {CONTENT} 作为事件。默认为 "{TIME} {CONTENT}"',
   'Default Event Composition': '默认事件组成',
   'Say Thank You': 'Say Thank You',
   Donate: '捐赠',
@@ -43,7 +43,7 @@ export default {
   'Edit Filter': '编辑过滤器',
   'Filter Name': '过滤器名称',
   'Content Regex': '内容正则表达式',
-  'Regular expression to match against event content': '用于匹配事件内容的正则表达式',
+  'Regular expression to match against event content': '用于匹配事件的正则表达式',
   'Event Types': '事件类型',
   'Types of events to include in this filter': '此过滤器包含的事件类型',
   'Add Event Type': '添加事件类型',
@@ -101,4 +101,26 @@ export default {
   'Task - Win': '任务 - 赢',
   'Task - Lose': '任务 - 输',
   Default: '默认',
+
+  // Event Creation Modal
+  'Event content': '事件',
+  'Enter the content for your event': '输入您的事件内容',
+  'Event notes': '事件备注',
+  'Enter additional notes for your event (optional)': '输入您事件的附加备注（可选）',
+  'Enter event notes...': '输入事件备注...',
+  'Start date and time': '开始日期和时间',
+  'End date and time': '结束日期和时间',
+  Create: '创建',
+
+  // Event Edit Modal
+  'Edit Event': '编辑事件',
+  Title: '标题',
+  'Event title': '事件标题',
+  'Type of event': '事件类型',
+  Notes: '备注',
+  'Additional notes for the event (optional)': '事件的附加备注（可选）',
+  'Start Date': '开始日期',
+  'When the event starts': '事件开始时间',
+  'End Date': '结束日期',
+  'When the event ends': '事件结束时间',
 };
