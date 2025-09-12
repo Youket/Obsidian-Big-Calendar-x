@@ -616,6 +616,56 @@ button.rbc-input::-moz-focus-inner {
   border: 1px solid var(--background-modifier-border);
 }
 
+/* 不同事件类型的视觉区别样式 */
+.rbc-event-content.Default {
+  background-color: var(--color-accent);
+  color: var(--text-on-accent);
+}
+
+.rbc-event-content.TASK-TODO {
+  background-color: var(--color-blue);
+  color: var(--text-on-accent);
+  border-left: 3px solid var(--color-blue-2);
+}
+
+.rbc-event-content.TASK-DONE {
+  background-color: var(--color-green);
+  color: var(--text-on-accent);
+  border-left: 3px solid var(--color-green-2);
+  opacity: 0.8;
+}
+
+.rbc-event-content.TASK-IN_PROGRESS {
+  background-color: var(--color-orange);
+  color: var(--text-on-accent);
+  border-left: 3px solid var(--color-orange-2);
+}
+
+.rbc-event-content.TASK-IMPORTANT {
+  background-color: var(--color-red);
+  color: var(--text-on-accent);
+  border-left: 3px solid var(--color-red-2);
+  font-weight: bold;
+}
+
+/* 事件类型标记样式 */
+.event-type-marker .task-list-item-checkbox[data-task=" "] {
+  border-color: var(--color-blue);
+}
+
+.event-type-marker .task-list-item-checkbox[data-task="x"] {
+  border-color: var(--color-green);
+  background-color: var(--color-green);
+}
+
+.event-type-marker .task-list-item-checkbox[data-task="/"] {
+  border-color: var(--color-orange);
+}
+
+.event-type-marker .task-list-item-checkbox[data-task="!"] {
+  border-color: var(--color-red);
+}
+
 /* 确保 textarea 可以拖拽调整大小 */
 .event-edit-form textarea,
 .modal textarea {

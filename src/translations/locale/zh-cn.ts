@@ -123,4 +123,14 @@ export default {
   'When the event starts': '事件开始时间',
   'End Date': '结束日期',
   'When the event ends': '事件结束时间',
+
+  // Context Menu
+  'Edit event': '编辑事件',
+  'Duplicate event': '复制事件',
+  'Set type: Default': '设置类型: 默认',
+  'Set type: To-Do': '设置类型: 待办',
+  'Set type: Done': '设置类型: 完成',
+  'Set type: In Progress': '设置类型: 进行中',
+  'Set type: Important': '设置类型: 重要',
+  'Delete event': '删除事件',
 };

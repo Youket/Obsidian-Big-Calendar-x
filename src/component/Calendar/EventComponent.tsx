@@ -5,6 +5,7 @@ import {eventService} from '@/services';
 import useFileStore from '@/stores/fileStore';
 import EventEditModal from './EventEditModal';
 import {Event} from 'react-big-calendar';
+import {t} from '@/translations/helper';
 
 // Define props interface that matches react-big-calendar's expectations
 interface EventProps<TEvent = Event> {
@@ -81,6 +82,10 @@ const EventComponent: React.FC<EventProps<Event>> = ({
 
       if (updatedEvent) {
         console.log(`Event status changed to ${newEventType}`);
+        // Force refresh the events list
+        if (app) {
+          await eventService.fetchAllEvents(app);
+        }
       }
     } catch (error) {
       console.error('Error toggling event status:', error);
@@ -97,7 +102,7 @@ const EventComponent: React.FC<EventProps<Event>> = ({
     // Add Edit option
     menu.addItem((item) => {
       item
-        .setTitle('Edit event')
+        .setTitle(t('Edit event'))
         .setIcon('pencil')
         .onClick(() => {
           // Make sure app is available
@@ -141,7 +146,7 @@ const EventComponent: React.FC<EventProps<Event>> = ({
     // Add Duplicate option
     menu.addItem((item) => {
       item
-        .setTitle('Duplicate event')
+        .setTitle(t('Duplicate event'))
         .setIcon('copy')
         .onClick(async () => {
           try {
@@ -159,11 +164,11 @@ const EventComponent: React.FC<EventProps<Event>> = ({
 
     // Add Event Type submenu
     const eventTypes = [
-      {type: 'default', name: 'Default'},
-      {type: 'TASK-TODO', name: 'To-Do'},
-      {type: 'TASK-DONE', name: 'Done'},
-      {type: 'TASK-IN_PROGRESS', name: 'In Progress'},
-      {type: 'TASK-IMPORTANT', name: 'Important'},
+      {type: 'default', name: t('Set type: Default')},
+      {type: 'TASK-TODO', name: t('Set type: To-Do')},
+      {type: 'TASK-DONE', name: t('Set type: Done')},
+      {type: 'TASK-IN_PROGRESS', name: t('Set type: In Progress')},
+      {type: 'TASK-IMPORTANT', name: t('Set type: Important')},
     ];
 
     // Add Type submenu
@@ -171,7 +176,7 @@ const EventComponent: React.FC<EventProps<Event>> = ({
       menu.addItem((item) => {
         const isCurrentType = event.eventType === typeOption.type;
         item
-          .setTitle(`Set type: ${typeOption.name}`)
+          .setTitle(typeOption.name)
           .setChecked(isCurrentType)
           .setIcon(typeOption.type === 'default' ? 'pencil' : 'check')
           .onClick(async () => {
@@ -185,10 +190,15 @@ const EventComponent: React.FC<EventProps<Event>> = ({
                 typeOption.type,
                 event.start,
                 event.end,
+                event.notes
               );
 
               if (updatedEvent) {
                 console.log(`Event type changed to ${typeOption.name}`);
+                // Force refresh the events list
+                if (app) {
+                  await eventService.fetchAllEvents(app);
+                }
               }
             } catch (error) {
               console.error('Error changing event type:', error);
@@ -204,12 +214,20 @@ const EventComponent: React.FC<EventProps<Event>> = ({
       item
         // @ts-expect-error internal method
         .setWarning(true)
-        .setTitle('Delete event')
+        .setTitle(t('Delete event'))
         .setIcon('trash')
         .onClick(async () => {
           try {
-            await eventService.deleteEventById(event.id);
-            console.log('Event deleted successfully');
+            const success = await eventService.deleteEventById(event.id);
+            if (success) {
+              console.log('Event deleted successfully');
+              // Force refresh the events list
+              if (app) {
+                await eventService.fetchAllEvents(app);
+              }
+            } else {
+              console.error('Failed to delete event');
+            }
           } catch (error) {
             console.error('Error deleting event:', error);
           }

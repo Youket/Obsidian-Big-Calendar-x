@@ -2,7 +2,7 @@ import useEventStore from '@/stores/eventStore';
 import {waitForInsert} from '@/obComponents/createEvent';
 import {changeEvent} from '@/obComponents/updateEvent';
 import {stringOrDate} from 'react-big-calendar';
-import {deleteForever} from '@/obComponents/deleteEvent';
+import {deleteForever, deleteEventFromDailyNote} from '@/obComponents/deleteEvent';
 import fileService from '@/services/fileService';
 import {parseEventInfoFromLine, lineContainsEvent} from '@/utils/fileParser';
 import {App, TFile, moment} from 'obsidian';
@@ -188,13 +188,51 @@ class EventService {
    * @returns Whether operation was successful
    */
   public async deleteEventById(id: string) {
-    useEventStore.getState().deleteEventById(id);
+    console.log('🗑️ [EVENT_SERVICE] Starting delete event process');
+    console.log('🗑️ [EVENT_SERVICE] Event ID:', id);
 
     try {
-      await deleteForever(id);
-      return true;
+      // 先获取事件信息（在删除之前）
+      const event = this.getEventById(id);
+      if (!event) {
+        console.error('❌ [EVENT_SERVICE] Event not found in store:', id);
+        return false;
+      }
+
+      console.log('📋 [EVENT_SERVICE] Event details:', {
+        id: event.id,
+        title: event.title,
+        path: event.path,
+        start: event.start,
+        end: event.end
+      });
+
+      // 如果有文件路径，直接从日记文件中删除
+      if (event.path) {
+        console.log('📁 [EVENT_SERVICE] Deleting from daily note file:', event.path);
+        const success = await deleteEventFromDailyNote(id, event.path, event.title);
+        if (success) {
+          console.log('✅ [EVENT_SERVICE] Event deleted from daily note successfully');
+          // 从状态中删除事件
+          useEventStore.getState().deleteEventById(id);
+          console.log('✅ [EVENT_SERVICE] Event removed from store');
+          return true;
+        } else {
+          console.error('❌ [EVENT_SERVICE] Failed to delete from daily note');
+          return false;
+        }
+      } else {
+        // 如果没有文件路径，使用旧的删除方法
+        console.log('⚠️ [EVENT_SERVICE] No file path found, using legacy delete method');
+        await deleteForever(id);
+        console.log('✅ [EVENT_SERVICE] Event deleted using legacy method');
+        // 从状态中删除事件
+        useEventStore.getState().deleteEventById(id);
+        console.log('✅ [EVENT_SERVICE] Event removed from store');
+        return true;
+      }
     } catch (err) {
-      console.error('Failed to delete event:', err);
+      console.error('❌ [EVENT_SERVICE] Failed to delete event:', err);
       return false;
     }
   }
